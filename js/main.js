@@ -11,20 +11,25 @@ Packer.prototype = {
   },
 
   fit: function(blocks) {
+    this.init(this.root.w, this.root.h);
     var n, node, block;
     blocks[0].parentNode.ondragover = allowDrop;
     blocks[0].parentNode.ondrop = drop;
+    blocks[0].parentNode.style.position = "relative";
+    var top = 0;
     for (n = 0; n < blocks.length; n++) {
       block = blocks[n];
       if (node = this.findNode(this.root, block.clientWidth, block.clientHeight))
         block.fit = this.splitNode(node, block.clientWidth, block.clientHeight);
     	block.ondrag = drag;
-    	block.style.position = "relative";
+    	block.style.position = "absolute";
     	block.style.display = "inline-block";
-    	block.style.top = block.fit.y;
-    	block.style.left = block.fit.x;
+    	block.style.top = block.fit.y+"px";
+    	block.style.left = block.fit.x+"px";
     	block.draggable = true;
+    	top = block.fit.y + block.clientHeight;
     }
+    blocks[0].parentNode.style.height = top+"px";
   },
 
   findNode: function(root, w, h) {
@@ -61,5 +66,6 @@ function drop(e) {
 		e.target.parentNode.appendChild(dragElm);
 	}else{
 		e.target.appendChild(dragElm);
-	}   
+	} 
+	packer.fit(document.querySelectorAll(".main-container .main section"));  
 }
