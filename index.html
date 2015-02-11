@@ -1,0 +1,70 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="stylesheet" href="css/normalize.min.css">
+        <link rel="stylesheet" href="css/main.css">
+
+        <!--[if lt IE 9]>
+            <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+            <script>window.html5 || document.write('<script src="js/vendor/html5shiv.js"><\/script>')</script>
+        <![endif]-->
+        <style type="text/css">
+        /* Prevent the text contents of draggable elements from being selectable. */
+		[draggable] {
+		  	-moz-user-select: none;
+		  	-khtml-user-select: none;
+		  	-webkit-user-select: none;
+		  	user-select: none;
+		  	/* Required to make elements draggable in old WebKit */
+		  	-khtml-user-drag: element;
+		  	-webkit-user-drag: element;
+		}
+        .main-container .main section{
+        	border: dotted 2px rgba(0,0,0,0.25);
+        	border-radius:1em;
+        	padding:2px;
+        }
+        </style>
+    </head>
+    <body>
+        <!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+        <div class="header-container">
+            <header class="wrapper clearfix">
+                <h1 class="title">PackerDash.js</h1>
+                <nav>
+                    <ul>
+                        <li><a href="#">Demo</a></li>
+                    </ul>
+                </nav>
+            </header>
+        </div>
+
+        <div class="main-container">
+            <div class="main wrapper clearfix">
+				<section style="height:50px;width:150px;">a</section>
+				<section style="height:50px;width:250px;">b</section>
+				<section style="height:150px;width:150px;">c</section>
+				<section style="height:50px;width:150px;">d</section>
+				<section style="height:250px;width:150px;">e</section>
+            </div> <!-- #main -->
+        </div> <!-- #main-container -->
+
+        <div class="footer-container">
+            <footer class="wrapper">
+                <h3>Thanks!</h3>
+            </footer>
+        </div>
+
+        <script src="js/main.js"></script>
+        <script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script>
+    </body>
+</html>
