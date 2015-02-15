@@ -22,12 +22,16 @@ Packer.prototype = {
       if (node = this.findNode(this.root, block.clientWidth, block.clientHeight))
         block.fit = this.splitNode(node, block.clientWidth, block.clientHeight);
     	block.ondrag = drag;
+      block.onmousedown = click;
+      block.addEventListener("dragstart",dragstart,false)
     	block.style.position = "absolute";
     	block.style.display = "inline-block";
     	block.style.top = block.fit.y+"px";
     	block.style.left = block.fit.x+"px";
     	block.draggable = true;
-    	top = block.fit.y + block.clientHeight;
+    	if(block.fit.y + block.clientHeight > top) {
+    		top = block.fit.y + block.clientHeight;
+    	}
     }
     blocks[0].parentNode.style.height = top+"px";
   },
@@ -54,18 +58,41 @@ var packer = new Packer(800,600);
 packer.fit(document.querySelectorAll(".main-container .main section"));
 
 var dragElm;
-function drag(e) {
-	dragElm = e.target;
+function click(e){
+  dragElm = e.target;
+  //console.log("mousedown");
 }
+function drag(e) {
+  //console.log("drag");
+  if( e.target.className.indexOf(" placeholder") == -1 ) {
+    e.target.className += " placeholder";
+  }
+}
+function dragstart(e) {
+  //console.log("dragstart");
+} 
 function allowDrop(e) {
-    e.preventDefault();
+  //console.log("allowDrop");
+  document.querySelector("#logger").innerHTML = e.clientX + ":" + e.clientY;
+  var blocks = document.querySelectorAll(".main-container .main section");
+  for (n = 0; n < blocks.length; n++) {
+    document.querySelector("#logger").innerHTML += " " + blocks[n].innerHTML + ": (" 
+    + (blocks[n].parentNode.offsetTop + blocks[n].fit.y) + ", "
+    + (blocks[n].parentNode.offsetLeft + blocks[n].fit.x) + ") (" 
+    + (blocks[n].parentNode.offsetTop + blocks[n].fit.y + blocks[n].clientHeight) + ", "
+    + (blocks[n].parentNode.offsetLeft + blocks[n].fit.x + blocks[n].clientWidth) + ") ";
+  }
+  e.preventDefault();
 }
 function drop(e) {
+  //console.log("drop");
 	e.preventDefault();
 	if(e.target.fit){
 		e.target.parentNode.appendChild(dragElm);
 	}else{
 		e.target.appendChild(dragElm);
 	} 
+  dragElm.className = dragElm.className.replace(/(?:^|\s)placeholder(?!\S)/g, "");
+  dragElm = null;
 	packer.fit(document.querySelectorAll(".main-container .main section"));  
 }
