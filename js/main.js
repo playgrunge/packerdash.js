@@ -19,6 +19,8 @@ Packer.prototype = {
     var top = 0;
     for (n = 0; n < blocks.length; n++) {
       block = blocks[n];
+      var oldy = block.fit?block.fit.y:0;
+      var oldx = block.fit?block.fit.x:0;
       if (node = this.findNode(this.root, block.clientWidth, block.clientHeight))
         block.fit = this.splitNode(node, block.clientWidth, block.clientHeight);
     	block.ondrag = drag;
@@ -26,12 +28,22 @@ Packer.prototype = {
       block.addEventListener("dragstart",dragstart,false)
     	block.style.position = "absolute";
     	block.style.display = "inline-block";
-    	block.style.top = block.fit.y+"px";
-    	block.style.left = block.fit.x+"px";
+    	//block.style.top = block.fit.y+"px";
+    	//block.style.left = block.fit.x+"px";
     	block.draggable = true;
     	if(block.fit.y + block.clientHeight > top) {
     		top = block.fit.y + block.clientHeight;
     	}
+      if(!block.fit.moving && (block.fit.x-oldx != 0 || block.fit.y-oldy != 0)){
+        snabbt(block, {
+          position: [block.fit.x, block.fit.y, 0],
+          easing: 'ease',
+          callback: function(){
+            block.fit.moving = false;
+          }
+        });
+        block.fit.moving = true;
+      }
     }
     blocks[0].parentNode.style.height = top+"px";
   },
@@ -53,7 +65,6 @@ Packer.prototype = {
   }
 
 }
-
 var packer = new Packer(800,600);
 packer.fit(document.querySelectorAll(".main-container .main section"));
 
@@ -73,24 +84,54 @@ function dragstart(e) {
 } 
 function allowDrop(e) {
   //console.log("allowDrop");
-  document.querySelector("#logger").innerHTML = e.clientX + ":" + e.clientY;
-  var blocks = document.querySelectorAll(".main-container .main section");
-  for (n = 0; n < blocks.length; n++) {
-    document.querySelector("#logger").innerHTML += " " + blocks[n].innerHTML + ": (" 
-    + (blocks[n].parentNode.offsetTop + blocks[n].fit.y) + ", "
-    + (blocks[n].parentNode.offsetLeft + blocks[n].fit.x) + ") (" 
-    + (blocks[n].parentNode.offsetTop + blocks[n].fit.y + blocks[n].clientHeight) + ", "
-    + (blocks[n].parentNode.offsetLeft + blocks[n].fit.x + blocks[n].clientWidth) + ") ";
-  }
   e.preventDefault();
+  var mouseX = e.clientX;
+  var mouseY = e.clientY;
+  document.querySelector("#logger").innerHTML = mouseX + ":" + mouseY
+  var blocks = document.querySelectorAll(".main-container .main section");
+  var dragstartX = dragElm.parentNode.offsetLeft + dragElm.fit.x;
+  var dragstartY = dragElm.parentNode.offsetTop + dragElm.fit.y;
+  var dragendX = dragstartX + dragElm.clientWidth;
+  var dragendY = dragstartY + dragElm.clientHeight;
+   document.querySelector("#logger").innerHTML += " ("+ dragstartX +":"+ dragendY +")";
+  for (n = 0; n < blocks.length; n++) {
+    var startX = blocks[n].parentNode.offsetLeft + blocks[n].fit.x;
+    var startY = blocks[n].parentNode.offsetTop + blocks[n].fit.y;
+    var endX = startX + blocks[n].clientWidth;
+    var endY = startY + blocks[n].clientHeight
+    document.querySelector("#logger").innerHTML += " " + blocks[n].innerHTML + ": (" 
+    + startY + ", " + startX + ") (" + endY + ", " + endX + ") ";
+    if(mouseX > startX && mouseX < endX && mouseY > startY && mouseY < endY){
+      if((mouseX < dragstartX && mouseY < dragendY) || mouseY < dragstartY){
+        document.querySelector("#logger").innerHTML += "<<*";
+        blocks[n].parentNode.insertBefore(dragElm, blocks[n]);
+        break;
+      }else{
+        document.querySelector("#logger").innerHTML += ">>*";
+      }
+    }else if(mouseY < startY){
+      document.querySelector("#logger").innerHTML += "<<";
+      blocks[n].parentNode.insertBefore(dragElm, blocks[n]);
+      break;
+    }else if(mouseY > startY && mouseY < endY && mouseX < startX){
+      document.querySelector("#logger").innerHTML += "<<";
+      blocks[n].parentNode.insertBefore(dragElm, blocks[n]);
+      break;
+    }else if(mouseY > endY){
+      document.querySelector("#logger").innerHTML += ">>";
+    }else if(mouseY > startY && mouseY < endY && mouseX > endX){
+      document.querySelector("#logger").innerHTML += ">>";
+    }
+  }
+  packer.fit(document.querySelectorAll(".main-container .main section")); 
 }
 function drop(e) {
   //console.log("drop");
 	e.preventDefault();
 	if(e.target.fit){
-		e.target.parentNode.appendChild(dragElm);
+		//e.target.parentNode.appendChild(dragElm);
 	}else{
-		e.target.appendChild(dragElm);
+		//e.target.appendChild(dragElm);
 	} 
   dragElm.className = dragElm.className.replace(/(?:^|\s)placeholder(?!\S)/g, "");
   dragElm = null;
