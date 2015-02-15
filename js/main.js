@@ -108,6 +108,9 @@ function allowDrop(e) {
         break;
       }else{
         document.querySelector("#logger").innerHTML += ">>*";
+        if(n == blocks.length - 1){
+          blocks[n].parentNode.appendChild(dragElm);
+        }
       }
     }else if(mouseY < startY){
       document.querySelector("#logger").innerHTML += "<<";
@@ -119,8 +122,14 @@ function allowDrop(e) {
       break;
     }else if(mouseY > endY){
       document.querySelector("#logger").innerHTML += ">>";
+      if(n == blocks.length - 1){
+          blocks[n].parentNode.appendChild(dragElm);
+        }
     }else if(mouseY > startY && mouseY < endY && mouseX > endX){
       document.querySelector("#logger").innerHTML += ">>";
+      if(n == blocks.length - 1){
+          blocks[n].parentNode.appendChild(dragElm);
+        }
     }
   }
   packer.fit(document.querySelectorAll(".main-container .main section")); 
