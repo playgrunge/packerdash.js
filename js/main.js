@@ -1,17 +1,18 @@
 //document.documentElement.clientHeight
 //document.documentElement.clientWidth
-Packer = function(w, h) {
-  this.init(w, h);
+Packer = function(w, h, m) {
+  this.init(w, h, m);
 };
 
 Packer.prototype = {
 
-  init: function(w, h) {
-    this.root = { x: 0, y: 0, w: w, h: h };
+  init: function(w, h, m) {
+    if(m === undefined) m = 0;
+    this.root = { x: 0, y: 0, w: w, h: h, m: m };
   },
 
   fit: function(blocks) {
-    this.init(this.root.w, this.root.h);
+    this.init(this.root.w, this.root.h, this.root.m);
     var n, node, block;
     blocks[0].parentNode.ondragover = allowDrop;
     blocks[0].parentNode.ondrop = drop;
@@ -21,8 +22,9 @@ Packer.prototype = {
       block = blocks[n];
       var oldy = block.fit?block.fit.y:0;
       var oldx = block.fit?block.fit.x:0;
-      if (node = this.findNode(this.root, block.clientWidth, block.clientHeight))
-        block.fit = this.splitNode(node, block.clientWidth, block.clientHeight);
+      if (node = this.findNode(this.root, block.clientWidth + this.root.m, block.clientHeight + this.root.m)){
+        block.fit = this.splitNode(node, block.clientWidth + this.root.m, block.clientHeight + this.root.m);
+      }
     	block.ondrag = drag;
       block.onmousedown = click;
       block.addEventListener("dragstart",dragstart,false)
@@ -31,8 +33,8 @@ Packer.prototype = {
     	//block.style.top = block.fit.y+"px";
     	//block.style.left = block.fit.x+"px";
     	block.draggable = true;
-    	if(block.fit.y + block.clientHeight > top) {
-    		top = block.fit.y + block.clientHeight;
+    	if(block.fit.y + (block.clientHeight + this.root.m) > top) {
+    		top = block.fit.y + (block.clientHeight + this.root.m);
     	}
       if(!block.fit.moving && (block.fit.x-oldx != 0 || block.fit.y-oldy != 0)){
         snabbt(block, {
@@ -66,12 +68,6 @@ Packer.prototype = {
   }
 
 }
-var packer = new Packer(document.documentElement.clientWidth-document.querySelector(".main-container .main").offsetLeft,600);
-packer.fit(document.querySelectorAll(".main-container .main section"));
-window.onresize = function(){
-  packer = new Packer(document.documentElement.clientWidth-document.querySelector(".main-container .main").offsetLeft,600);
-  packer.fit(document.querySelectorAll(".main-container .main section"));
-};
 var dragElm;
 function click(e){
   dragElm = e.target;
@@ -130,13 +126,28 @@ function allowDrop(e) {
 }
 function drop(e) {
   //console.log("drop");
-	e.preventDefault();
-	if(e.target.fit){
-		//e.target.parentNode.appendChild(dragElm);
-	}else{
-		//e.target.appendChild(dragElm);
-	} 
+  e.preventDefault();
+  if(e.target.fit){
+    //e.target.parentNode.appendChild(dragElm);
+  }else{
+    //e.target.appendChild(dragElm);
+  } 
   dragElm.className = dragElm.className.replace(/(?:^|\s)placeholder(?!\S)/g, "");
   dragElm = null;
-	packer.fit(document.querySelectorAll(".main-container .main section"));  
+  packer.fit(document.querySelectorAll(".main-container .main section"));  
 }
+
+
+
+
+var blocks = document.querySelectorAll(".main-container .main section");
+var colors = Array("#303F9F","#3F51B5","#C5CAE9","#FFFFFF","#03A9F4","#212121","#727272","#B6B6B6");
+for (n = 0; n < blocks.length; n++) {
+  blocks[n].style.backgroundColor = colors[n%colors.length];
+}
+var packer = new Packer(document.documentElement.clientWidth-document.querySelector(".main-container .main").offsetLeft,60000,20);
+packer.fit(document.querySelectorAll(".main-container .main section"));
+window.onresize = function(){
+  packer = new Packer(document.documentElement.clientWidth-document.querySelector(".main-container .main").offsetLeft,60000,20);
+  packer.fit(document.querySelectorAll(".main-container .main section"));
+};
