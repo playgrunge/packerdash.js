@@ -1,5 +1,3 @@
-//document.documentElement.clientHeight
-//document.documentElement.clientWidth
 Packer = function(w, h, m) {
   this.init(w, h, m);
 };
@@ -30,8 +28,6 @@ Packer.prototype = {
       block.addEventListener("dragstart",dragstart,false)
     	block.style.position = "absolute";
     	block.style.display = "inline-block";
-    	//block.style.top = block.fit.y+"px";
-    	//block.style.left = block.fit.x+"px";
     	block.draggable = true;
     	if(block.fit.y + (block.clientHeight + this.root.m) > top) {
     		top = block.fit.y + (block.clientHeight + this.root.m);
@@ -71,19 +67,16 @@ Packer.prototype = {
 var dragElm;
 function click(e){
   dragElm = e.target;
-  //console.log("mousedown");
 }
 function drag(e) {
-  //console.log("drag");
   if( e.target.className.indexOf(" placeholder") == -1 ) {
     e.target.className += " placeholder";
   }
 }
 function dragstart(e) {
-  //console.log("dragstart");
+  e.dataTransfer.setData('Text', this.id);
 } 
 function allowDrop(e) {
-  //console.log("allowDrop");
   e.preventDefault();
   var mouseX = e.clientX;
   var mouseY = e.clientY;
@@ -125,18 +118,11 @@ function allowDrop(e) {
   packer.fit(document.querySelectorAll(".main-container .main section")); 
 }
 function drop(e) {
-  //console.log("drop");
   e.preventDefault();
-  if(e.target.fit){
-    //e.target.parentNode.appendChild(dragElm);
-  }else{
-    //e.target.appendChild(dragElm);
-  } 
   dragElm.className = dragElm.className.replace(/(?:^|\s)placeholder(?!\S)/g, "");
   dragElm = null;
   packer.fit(document.querySelectorAll(".main-container .main section"));  
 }
-
 
 
 
