@@ -40,7 +40,7 @@ Packer.prototype = {
         snabbt(block, {
           position: [block.fit.x, block.fit.y, 0],
           easing: 'easeIn',
-          duration: 100,
+          duration: 200,
           callback: function(){
             block.fit.moving = false;
           }
