@@ -37,7 +37,8 @@ Packer.prototype = {
       if(!block.fit.moving && (block.fit.x-oldx != 0 || block.fit.y-oldy != 0)){
         snabbt(block, {
           position: [block.fit.x, block.fit.y, 0],
-          easing: 'ease',
+          easing: 'easeIn',
+          duration: 100,
           callback: function(){
             block.fit.moving = false;
           }
@@ -65,9 +66,12 @@ Packer.prototype = {
   }
 
 }
-var packer = new Packer(800,600);
+var packer = new Packer(document.documentElement.clientWidth-document.querySelector(".main-container .main").offsetLeft,600);
 packer.fit(document.querySelectorAll(".main-container .main section"));
-
+window.onresize = function(){
+  packer = new Packer(document.documentElement.clientWidth-document.querySelector(".main-container .main").offsetLeft,600);
+  packer.fit(document.querySelectorAll(".main-container .main section"));
+};
 var dragElm;
 function click(e){
   dragElm = e.target;
@@ -87,46 +91,36 @@ function allowDrop(e) {
   e.preventDefault();
   var mouseX = e.clientX;
   var mouseY = e.clientY;
-  document.querySelector("#logger").innerHTML = mouseX + ":" + mouseY
   var blocks = document.querySelectorAll(".main-container .main section");
   var dragstartX = dragElm.parentNode.offsetLeft + dragElm.fit.x;
   var dragstartY = dragElm.parentNode.offsetTop + dragElm.fit.y;
   var dragendX = dragstartX + dragElm.clientWidth;
   var dragendY = dragstartY + dragElm.clientHeight;
-   document.querySelector("#logger").innerHTML += " ("+ dragstartX +":"+ dragendY +")";
   for (n = 0; n < blocks.length; n++) {
     var startX = blocks[n].parentNode.offsetLeft + blocks[n].fit.x;
     var startY = blocks[n].parentNode.offsetTop + blocks[n].fit.y;
     var endX = startX + blocks[n].clientWidth;
     var endY = startY + blocks[n].clientHeight
-    document.querySelector("#logger").innerHTML += " " + blocks[n].innerHTML + ": (" 
-    + startY + ", " + startX + ") (" + endY + ", " + endX + ") ";
     if(mouseX > startX && mouseX < endX && mouseY > startY && mouseY < endY){
       if((mouseX < dragstartX && mouseY < dragendY) || mouseY < dragstartY){
-        document.querySelector("#logger").innerHTML += "<<*";
         blocks[n].parentNode.insertBefore(dragElm, blocks[n]);
         break;
       }else{
-        document.querySelector("#logger").innerHTML += ">>*";
         if(n == blocks.length - 1){
           blocks[n].parentNode.appendChild(dragElm);
         }
       }
     }else if(mouseY < startY){
-      document.querySelector("#logger").innerHTML += "<<";
       blocks[n].parentNode.insertBefore(dragElm, blocks[n]);
       break;
     }else if(mouseY > startY && mouseY < endY && mouseX < startX){
-      document.querySelector("#logger").innerHTML += "<<";
       blocks[n].parentNode.insertBefore(dragElm, blocks[n]);
       break;
     }else if(mouseY > endY){
-      document.querySelector("#logger").innerHTML += ">>";
       if(n == blocks.length - 1){
           blocks[n].parentNode.appendChild(dragElm);
         }
     }else if(mouseY > startY && mouseY < endY && mouseX > endX){
-      document.querySelector("#logger").innerHTML += ">>";
       if(n == blocks.length - 1){
           blocks[n].parentNode.appendChild(dragElm);
         }
